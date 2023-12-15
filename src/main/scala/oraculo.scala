@@ -57,6 +57,32 @@ object oraculo {
     }
     auxiliar(Seq(), 0)
   }
+  //metodo para reconstruir cadena mejorado parallel usando metodo parallel de common para paralelizar
+  def ReconstruirCadenaMejoradoParalelo(n: Int, o: Oraculo): Seq[Char] = {
+
+    // Realiza la reconstrucción de manera paralela para tamaños grandes
+    def auxiliarParalelo(secuencia: Seq[Char], k: Int): Seq[Char] = {
+      if (k == n && o(secuencia)) {
+        secuencia
+      } else if (k < n) {
+        // Utilizar par.map para realizar llamadas en paralelo con task
+        val resultadosParalelos = alfabeto.par.map { letra =>
+          task(auxiliarParalelo(secuencia :+ letra, k + 1)).join() // Utilizar task para crear una tarea
+        }
+        // Utilizar find sobre la secuencia resultante de forma no paralela
+        resultadosParalelos.find(o).getOrElse(Seq())
+      } else {
+        Seq()
+      }
+
+    }
+    auxiliarParalelo(Seq(), 0)
+  }
+
+
+
+
+
 
   //metodo para reconstruir cadena turbo
 
@@ -84,7 +110,7 @@ object oraculo {
   }
 
   def pruebas(): Unit = {
-    val tamanios = Seq(4) // Diferentes tamaños de cadena para probar
+    val tamanios = Seq(4,8,12,16,20,24,28)// Diferentes tamaños de cadena para probar
 
     // Imprimir encabezado de la tabla
     println(f"| Tamaño | Ingenuo (ms) | Mejorado (ms) | Turbo (ms) | Oráculo |")
@@ -131,8 +157,8 @@ object oraculo {
     (tiempoSecuencial.value, tiempoParalelo.value, aceleracion)
   }
   //comparar ingenuo vs parallel con compararAlgoritmos
-  def pruebasCompararAlgoritmos(): Unit = {
-    val tamanios = Seq(4,8,10,12,14,16,18,20) // Diferentes tamaños de cadena para probar
+  def pruebasCompararAlgoritmosIngenuo(): Unit = {
+    val tamanios = Seq(4,8,12,32,128,256) // Diferentes tamaños de cadena para probar
     //imprimir encabezado de la tabla
     println(f"| Tamaño | Ingenuo (ms) | Ingenuo Parallel (ms) | Aceleracion (ms) |Oráculo |")
     //usar metodo comparar algoritmos para comparar ingenuo vs parallel
@@ -143,25 +169,27 @@ object oraculo {
     }
   }
 
+  //comparar mejorado vs parallel con compararAlgoritmos
+  def pruebasCompararAlgoritmosMejorado(): Unit = {
+    val tamanios = Seq(4,8,12,32,128,256) // Diferentes tamaños de cadena para probar
+    //imprimir encabezado de la tabla
+    println(f"| Tamaño | Mejorado (ms) | Mejorado Parallel (ms) | Aceleracion (ms) |Oráculo |")
+    //usar metodo comparar algoritmos para comparar ingenuo vs parallel
+    for (tamano <- tamanios) {
+      val oraculo = generarOraculo(tamano)
+      val (tiempoSecuencial, tiempoParalelo, aceleracion) = compararAlgoritmos(ReconstruirCadenaMejorado, ReconstruirCadenaMejoradoParalelo)(tamano, (s: Seq[Char]) => s == oraculo)
+      println(f"| $tamano%6d | ${tiempoSecuencial}%12.4f | ${tiempoParalelo}%14.4f | ${aceleracion}%14.4f |  ${oraculo}%10s |")
+    }
+  }
 
     def main(args: Array[String]): Unit = {
-      // medir tiempo de ejecucion de reconstruirCadenaIngenuo
-      /*val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'c', 'a', 't', 'g', 'g', 'a', 'a', 'a', 't', 'a', 'a')
-      val resultado = reconstruirCadenaIngenuoParallel(12, oraculo)
-      println(resultado)*/
-      /*val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'c', 'a', 't', 'g', 'g', 'a', 'a', 'a', 't', 'a', 'a')
-      val tiempoInicio = System.currentTimeMillis()
-      reconstruirCadenaIngenuoParallel(12, oraculo)
-      val tiempoFin = System.currentTimeMillis()
-      val tiempoTotal = tiempoFin - tiempoInicio
-      println(f"Tiempo de ejecución: $tiempoTotal ms")
-
-      //tiempo de ejecucion de reconstruirCadenaIngenuo
-      val tiempoInicio2 = System.currentTimeMillis()
-      reconstruirCadenaIngenuo(12, oraculo)
-      val tiempoFin2 = System.currentTimeMillis()
-      val tiempoTotal2 = tiempoFin2 - tiempoInicio2
-      println(f"Tiempo de ejecución: $tiempoTotal2 ms")*/
+      //medir tiempo de ejecucion de reconstruirCadenamejorado parallel
+      /*val oraculo = generarOraculo(4)
+      val resultado = withWarmer(new Warmer.Default) measure {
+        ReconstruirCadenaMejoradoParalelo(4, (s: Seq[Char]) => s == oraculo)
+      }
+      println(resultado, oraculo)*/
+      pruebasCompararAlgoritmosIngenuo()
 
     }
 }
