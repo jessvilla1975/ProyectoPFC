@@ -26,26 +26,27 @@ object oraculo {
     (secuencia.take(mitad), secuencia.drop(mitad))
   }
 
+
+
+
   // Nuevo método mejorarIngenuo
   // Método mejorarIngenuo
-  def ReconstruirCadenaMejorao(n: Int, o: Oraculo): Seq[Char] = {
-    def auxiliar(secuencia: Seq[Char], n: Int): Seq[Char] = {
-      if (n == 0) {
-        secuencia
-      } else {
+  def ReconstruirCadenaMejorado(n: Int, o: Oraculo): Seq[Char] = {
+    def auxiliar(secuencia: Seq[Char], k: Int): Seq[Char] = {
+      if (k <= n) {
         val (izq, der) = SubSecuencias(secuencia)
-        val izq2 = reconstruirCadenaIngenuo(n/2, izq => o(izq))
+        val izq2 = reconstruirCadenaIngenuo(n / 2, izq => o(izq))
         val der2 = reconstruirCadenaIngenuo(n, der => o(der))
         izq2 ++ der2
+      } else {
+        secuencia
       }
     }
-
-    auxiliar(Seq(), n)
+    auxiliar(Seq(), 1)
   }
 
-
   def main(args: Array[String]): Unit = {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'g', 't', 'c')
+    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'a', 't', 'c')
 
     // Probamos la función reconstruirCadenaIngenuo con n = 4 y nuestro oráculo
     val resultadoIngenuo = reconstruirCadenaIngenuo(4, oraculo)
@@ -53,7 +54,7 @@ object oraculo {
     println("Resultado Ingenuo: " + resultadoIngenuo)
 
     // Probamos la función mejorarIngenuo con n = 4 y nuestro oráculo
-    val resultadoMejorado =  ReconstruirCadenaMejorao(4, oraculo)
+    val resultadoMejorado =  ReconstruirCadenaMejorado(4, oraculo)
     // Imprimimos el resultado
     println("Resultado Mejorado: " + resultadoMejorado)
 
