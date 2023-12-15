@@ -87,14 +87,30 @@ object oraculo {
   //metodo para reconstruir cadena turbo
 
   def ReconstruirCadenaTurbo(n: Int, o: Oraculo): Seq[Char] = {
-    def reconstruirRec(k: Int, candidatos: Seq[Seq[Char]]): Seq[Char] = {
+    def reconstruirRec(k: Int, secuencia: Seq[Seq[Char]]): Seq[Char] = {
       if (k == n) {
-        candidatos.find(_.length == n).getOrElse(Seq()) // Devolver la cadena de longitud n si existe, de lo contrario, una lista vacía
+        secuencia.find(_.length == n).getOrElse(Seq()) // Devolver la cadena de longitud n si existe, de lo contrario, una lista vacía
       } else {
-        val nuevosCandidatos = candidatos.flatMap(candidato =>
+        val nuevosCandidatos = secuencia.flatMap(candidato =>
+          alfabeto.map(letra => candidato :+ letra)
+        )
+        if (nuevosCandidatos.isEmpty) Seq() // No hay cadenas válidas de longitud k
+
+        reconstruirRec(k * 2, nuevosCandidatos) // Llamada recursiva con el doble de la longitud
+      }
+    }
+
+    reconstruirRec(1, alfabeto.map(Seq(_)))
+  }
+
+  def ReconstruirCadenaTurboMejorado(n: Int, o: Oraculo): Seq[Char] = {
+    def reconstruirRec(k: Int, secuencia: Seq[Seq[Char]]): Seq[Char] = {
+      if (k == n) {
+        secuencia.find(_.length == n).getOrElse(Seq()) // Devolver la cadena de longitud n si existe, de lo contrario, una lista vacía
+      } else {
+        val nuevosCandidatos = secuencia.flatMap(candidato =>
           alfabeto.map(letra => candidato :+ letra)
         ).filter(o)
-
         if (nuevosCandidatos.isEmpty) Seq() // No hay cadenas válidas de longitud k
 
         reconstruirRec(k * 2, nuevosCandidatos) // Llamada recursiva con el doble de la longitud
@@ -113,7 +129,7 @@ object oraculo {
     val tamanios = Seq(4,8,12,16,20,24,28)// Diferentes tamaños de cadena para probar
 
     // Imprimir encabezado de la tabla
-    println(f"| Tamaño | Ingenuo (ms) | Mejorado (ms) | Turbo (ms) | Oráculo |")
+    println(f"| Tamaño | Ingenuo (ms) | Mejorado (ms) | Turbo (ms) | TurboMejorado |(ms)Oráculo |")
 
     for (tamano <- tamanios) {
       val oraculo = generarOraculo(tamano)
@@ -131,9 +147,13 @@ object oraculo {
       val tiempoTurbo = withWarmer(new Warmer.Default) measure {
         val resultadoTurbo = ReconstruirCadenaTurbo(tamano, (s: Seq[Char]) => s == oraculo)
       }
+      // Medir tiempo de ejecución para ReconstruirCadenaTurboMejorado
+      val tiempoTurboMejorado = withWarmer(new Warmer.Default) measure {
+        val resultadoTurboMejorado = ReconstruirCadenaTurboMejorado(tamano, (s: Seq[Char]) => s == oraculo)
+      }
 
       // Imprimir resultados en formato de tabla
-      println(f"| $tamano%6d | ${tiempoIngenuo.value}%12.4f | ${tiempoMejorado.value}%14.4f | ${tiempoTurbo.value}%14.4f |  ${oraculo}%10s |")
+      println(f"| $tamano%6d | ${tiempoIngenuo.value}%12.4f | ${tiempoMejorado.value}%14.4f | ${tiempoTurbo.value}%14.4f |  ${tiempoTurboMejorado.value}%14.4f |${oraculo}%10s |")
     }
   }
 
@@ -186,10 +206,13 @@ object oraculo {
       //medir tiempo de ejecucion de reconstruirCadenamejorado parallel
       /*val oraculo = generarOraculo(4)
       val resultado = withWarmer(new Warmer.Default) measure {
-        ReconstruirCadenaMejoradoParalelo(4, (s: Seq[Char]) => s == oraculo)
+        ReconstruirCadenaTurbo(4, (s: Seq[Char]) => s == oraculo)
       }
-      println(resultado, oraculo)*/
+      println(resultado, oraculo)**/
+      //pruebas()
       pruebasCompararAlgoritmosIngenuo()
+
+
 
     }
 }
