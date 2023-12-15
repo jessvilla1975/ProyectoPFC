@@ -37,7 +37,7 @@ object oraculo {
   }
 
   def main(args: Array[String]): Unit = {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'a', 't', 'c')
+    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 't', 'a', 'c')
 
     // Acumular resultados
     var resultadoIngenuo: Seq[Char] = null
