@@ -12,52 +12,52 @@ object oraculo {
 
   def reconstruirCadenaIngenuo(n: Int, o: Oraculo): Seq[Char] = {
     def auxiliar(secuencia: Seq[Char], n: Int): Seq[Char] = {
-      if (n == 0) {
+      if (n == 0) { // Si n es 0, devolvemos la secuencia
         secuencia
       } else {
+        // Si n no es 0, añadimos cada letra del alfabeto a la secuencia y llamamos recursivamente a la función
         alfabeto.map(letra => auxiliar(secuencia :+ letra, n - 1)).find(o).getOrElse(Seq())
       }
     }
-    auxiliar(Seq(), n)
-  }
-
-  def SubSecuencias(secuencia: Seq[Char]): (Seq[Char], Seq[Char]) = {
-    val mitad = secuencia.length / 2
-    (secuencia.take(mitad), secuencia.drop(mitad))
+    auxiliar(Seq(), n) // Llamamos a la función auxiliar con una secuencia vacía y n
   }
 
 
-
-
-  // Nuevo método mejorarIngenuo
-  // Método mejorarIngenuo
   def ReconstruirCadenaMejorado(n: Int, o: Oraculo): Seq[Char] = {
     def auxiliar(secuencia: Seq[Char], k: Int): Seq[Char] = {
-      if (k <= n) {
-        val (izq, der) = SubSecuencias(secuencia)
-        val izq2 = reconstruirCadenaIngenuo(n / 2, izq => o(izq))
-        val der2 = reconstruirCadenaIngenuo(n, der => o(der))
-        izq2 ++ der2
-      } else {
+      if (k == n && o(secuencia)) { // Si la secuencia es de tamaño n y es aceptada por el oráculo, devolvemos la secuencia
         secuencia
+      } else if (k < n) { // Si la secuencia es de tamaño menor que n, la dividimos en dos y llamamos recursivamente a la función
+         alfabeto.map(letra => auxiliar(secuencia :+ letra, k + 1)).find(o).getOrElse(Seq())
+      } else {
+        Seq()
       }
     }
-    auxiliar(Seq(), 1)
+    auxiliar(Seq(), 0)
   }
 
   def main(args: Array[String]): Unit = {
     val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'a', 't', 'c')
 
-    // Probamos la función reconstruirCadenaIngenuo con n = 4 y nuestro oráculo
-    val resultadoIngenuo = reconstruirCadenaIngenuo(4, oraculo)
-    // Imprimimos el resultado
+    // Acumular resultados
+    var resultadoIngenuo: Seq[Char] = null
+    var resultadoMejorado: Seq[Char] = null
+
+    // Medir tiempo de ejecución para reconstruirCadenaIngenuo
+    val tiempoIngenuo = withWarmer(new Warmer.Default) measure {
+      resultadoIngenuo = reconstruirCadenaIngenuo(4, oraculo)
+    }
+
+    // Medir tiempo de ejecución para ReconstruirCadenaMejorado
+    val tiempoMejorado = withWarmer(new Warmer.Default) measure {
+      resultadoMejorado = ReconstruirCadenaMejorado(4, oraculo)
+    }
+
+    // Imprimir resultados una sola vez al final
     println("Resultado Ingenuo: " + resultadoIngenuo)
+    println(s"Tiempo de ejecución para reconstruirCadenaIngenuo: $tiempoIngenuo ")
 
-    // Probamos la función mejorarIngenuo con n = 4 y nuestro oráculo
-    val resultadoMejorado =  ReconstruirCadenaMejorado(4, oraculo)
-    // Imprimimos el resultado
     println("Resultado Mejorado: " + resultadoMejorado)
-
-
+    println(s"Tiempo de ejecución para ReconstruirCadenaMejorado: $tiempoMejorado ")
   }
 }
