@@ -6,32 +6,24 @@ import oraculo._
 @RunWith(classOf[JUnitRunner])
 class TestReconstruirCadenaIngenuoParallel extends AnyFunSuite{
   //crear test para hacer preguntas al oraculo
-  test("TestReconstruirCadenaIngenuoParallel") {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'a', 'a', 'a')
-    val resultado = reconstruirCadenaIngenuoParallel(4, oraculo)
-    assert(resultado == Seq('a', 'a', 'a', 'a'))
+  test("TestReconstruirCadenaIngenuoParallel"){
+    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'c', 'g', 't')
+    val secuencia = reconstruirCadenaIngenuoParallel(2)(4, oraculo)
+    assert(secuencia == Seq('a', 'c', 'g', 't'))
   }
-  test("TestReconstruirCadenaIngenuoParallel2") {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'g', 'g', 'a')
-    val resultado = reconstruirCadenaIngenuoParallel(4, oraculo)
-    assert(resultado == Seq('a', 'g', 'g', 'a'))
+  //crea test tamaño 8
+  test("TestReconstruirCadenaIngenuoParallel2"){
+    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'c', 'g', 't', 'a', 'c', 'g', 't')
+    val secuencia = reconstruirCadenaIngenuoParallel(4)(8, oraculo)
+    assert(secuencia == Seq('a', 'c', 'g', 't', 'a', 'c', 'g', 't'))
   }
-  test("TestReconstruirCadenaIngenuoParallel3") {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('t', 'g', 'c')
-    val resultado = reconstruirCadenaIngenuoParallel(3, oraculo)
-    assert(resultado == Seq('t', 'g', 'c'))
+  //crea test tamaño 12
+  test("TestReconstruirCadenaIngenuoParallel3"){
+    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'c', 'g', 't', 'a', 'c', 'g', 't', 'a', 'c', 'g', 't')
+    val secuencia = reconstruirCadenaIngenuoParallel(8)(12, oraculo)
+    assert(secuencia == Seq('a', 'c', 'g', 't', 'a', 'c', 'g', 't', 'a', 'c', 'g', 't'))
   }
-  test("TestReconstruirCadenaIngenuoParallel4") {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'x', 'b', 'a')
-    val resultado = reconstruirCadenaIngenuoParallel(3, oraculo)
-    assert(resultado.isEmpty)
-  }
-  //crear test para hacer preguntas al oraculo tamaño 12
-test("TestReconstruirCadenaIngenuoParallel5") {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'c', 'a', 't', 'g', 'g', 'a', 'a', 'a', 't', 'a','a')
-    val resultado = reconstruirCadenaIngenuoParallel(12, oraculo)
-    assert(resultado == Seq('a', 'c', 'a', 't', 'g', 'g', 'a', 'a', 'a', 't', 'a','a'))
-  }
+
 
 
 }

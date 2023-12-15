@@ -6,32 +6,30 @@ import oraculo._
 @RunWith(classOf[JUnitRunner])
 class TestReconstruirCadenaMejoradoParalelo extends AnyFunSuite {
   //crear test para hacer preguntas al oraculo
-  test("TestReconstruirCadenaMejoradoParalelo") {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'a', 'a', 'a')
-    val resultado = ReconstruirCadenaMejoradoParalelo(4, oraculo)
-    assert(resultado == Seq('a', 'a', 'a', 'a'))
+  test("TestReconstruirCadenaIngenuoParallel") {
+    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'c', 'g', 't')
+    val secuencia = ReconstruirCadenaMejoradoPar(2)(4, oraculo)
+    assert(secuencia == Seq('a', 'c', 'g', 't'))
   }
-  test("TestReconstruirCadenaMejoradoParalelo2") {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'g', 'g', 'a')
-    val resultado = ReconstruirCadenaMejoradoParalelo(4, oraculo)
-    assert(resultado == Seq('a', 'g', 'g', 'a'))
+  //crea test tamaño 8
+  test("TestReconstruirCadenaIngenuoParallel2") {
+    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'c', 'g', 't', 'a', 'c', 'g', 't')
+    val secuencia = ReconstruirCadenaMejoradoPar(2)(8, oraculo)
+    assert(secuencia == Seq('a', 'c', 'g', 't', 'a', 'c', 'g', 't'))
   }
-  test("TestReconstruirCadenaMejoradoParalelo3") {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('t', 'g', 'c')
-    val resultado = ReconstruirCadenaMejoradoParalelo(3, oraculo)
-    assert(resultado == Seq('t', 'g', 'c'))
+  //crea test tamaño 12
+  test("TestReconstruirCadenaIngenuoParallel3") {
+    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'c', 'g', 't', 'a', 'c', 'g', 't', 'a', 'c', 'g', 't')
+    val secuencia = ReconstruirCadenaMejoradoPar(2)(12, oraculo)
+    assert(secuencia == Seq('a', 'c', 'g', 't', 'a', 'c', 'g', 't', 'a', 'c', 'g', 't'))
   }
-  test("TestReconstruirCadenaMejoradoParalelo4") {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'x', 'b', 'a')
-    val resultado = ReconstruirCadenaMejoradoParalelo(3, oraculo)
-    assert(resultado.isEmpty)
+//crea test tamaño devuelve lista vacia
+  test("TestReconstruirCadenaIngenuoParallel4") {
+    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'e', 't', 'f')
+    val secuencia = ReconstruirCadenaMejoradoPar(2)(4, oraculo)
+    assert(secuencia.isEmpty)
   }
-  //crear test para hacer preguntas al oraculo tamaño 12
-  test("TestReconstruirCadenaMejoradoParalelo5") {
-    val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'c', 'a', 't', 'g', 'g', 'a', 'a', 'a', 't', 'a', 'a')
-    val resultado = ReconstruirCadenaMejoradoParalelo(12, oraculo)
-    assert(resultado == Seq('a', 'c', 'a', 't', 'g', 'g', 'a', 'a', 'a', 't', 'a', 'a'))
-  }
+
 
 
 }

@@ -27,28 +27,29 @@ object oraculo {
     }
     auxiliar(Seq(), n) // Llamamos a la función auxiliar con una secuencia vacía y n
   }
-  //metodo para reconstruir cadena ingenuo parallel
+  //metodo para reconstruir cadena ingenuo parallel preguntar por el umbral
   def reconstruirCadenaIngenuoParallel(umbral: Int)(n: Int, o: Oraculo): Seq[Char] = {
     def auxiliar(secuencia: Seq[Char], n: Int): Seq[Char] = {
       if (n == 0) {
         secuencia
       } else {
-        if (n < umbral) {
-          // Realizar llamadas de manera secuencial para tamaños pequeños
-          reconstruirCadenaIngenuo(n, o)
-        } else {
-          // Utilizar par.map para realizar llamadas en paralelo con task
-          val parallelResults = alfabeto.par.map { letra =>
-            task(auxiliar(secuencia :+ letra, n - 1)).join() // Utilizar task para crear una tarea
+          if(n < umbral && o(secuencia)) {
+            // Realizar llamadas de manera secuencial para tamaños pequeños
+            reconstruirCadenaIngenuo(n, o)
+          } else {
+            // Utilizar par.map para realizar llamadas en paralelo con task
+            val resultadosParalelos = alfabeto.par.map { letra =>
+              task(auxiliar(secuencia :+ letra, n - 1)).join() // Utilizar task para crear una tarea
+            }
+            // Utilizar find sobre la secuencia resultante de forma no paralela
+            resultadosParalelos.find(o).getOrElse(Seq())
           }
-          // Utilizar find sobre la secuencia resultante de forma no paralela
-          parallelResults.find(o).getOrElse(Seq())
         }
       }
+      auxiliar(Seq(), n)
     }
 
-    auxiliar(Seq(), n)
-  }
+
 
   //metodo para reconstruir cadena mejorado
 
@@ -196,7 +197,7 @@ object oraculo {
     //usar metodo comparar algoritmos para comparar ingenuo vs parallel
     for (tamano <- tamanios) {
       val oraculo = generarOraculo(tamano)
-      val (tiempoSecuencial, tiempoParalelo, aceleracion) = compararAlgoritmos(reconstruirCadenaIngenuo, reconstruirCadenaIngenuoParallel(4))(tamano, (s: Seq[Char]) => s == oraculo)
+      val (tiempoSecuencial, tiempoParalelo, aceleracion) = compararAlgoritmos(reconstruirCadenaIngenuo, reconstruirCadenaIngenuoParallel(8))(tamano, (s: Seq[Char]) => s == oraculo)
       println(f"| $tamano%6d | ${tiempoSecuencial}%12.4f | ${tiempoParalelo}%14.4f | ${aceleracion}%14.4f |  ${oraculo}%10s |")
     }
   }
@@ -209,21 +210,19 @@ object oraculo {
     //usar metodo comparar algoritmos para comparar ingenuo vs parallel
     for (tamano <- tamanios) {
       val oraculo = generarOraculo(tamano)
-      val (tiempoSecuencial, tiempoParalelo, aceleracion) = compararAlgoritmos(ReconstruirCadenaMejorado, ReconstruirCadenaMejoradoPar(4))(tamano, (s: Seq[Char]) => s == oraculo)
+      val (tiempoSecuencial, tiempoParalelo, aceleracion) = compararAlgoritmos(ReconstruirCadenaMejorado, ReconstruirCadenaMejoradoPar(8))(tamano, (s: Seq[Char]) => s == oraculo)
       println(f"| $tamano%6d | ${tiempoSecuencial}%12.4f | ${tiempoParalelo}%14.4f | ${aceleracion}%14.4f |  ${oraculo}%10s |")
     }
   }
 
     def main(args: Array[String]): Unit = {
-      //medir tiempo de ejecucion de reconstruirCadenamejorado parallel
-      /*val oraculo = generarOraculo(4)
-      val resultado = withWarmer(new Warmer.Default) measure {
-        ReconstruirCadenaTurbo(4, (s: Seq[Char]) => s == oraculo)
-      }
-      println(resultado, oraculo)**/
+      //medir tiempo de ejecucion de ingenuo parallel
+      val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'a', 'g', 't')
+      val secuencia = reconstruirCadenaIngenuoParallel(2)(4, oraculo)
+      println(secuencia)
       //pruebas()
-       pruebasCompararAlgoritmosIngenuo()
-      //pruebasCompararAlgoritmosMejorado()
+       //pruebasCompararAlgoritmosIngenuo()
+      pruebasCompararAlgoritmosMejorado()
 
 
 
