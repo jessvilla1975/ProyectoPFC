@@ -140,11 +140,10 @@ object oraculo {
   }
 
   def pruebas(): Unit = {
-    val tamanios = Seq(4,8,12,16,20,24,28)// Diferentes tamaños de cadena para probar
+    val tamanios = Seq(2,4,8,10,12)// Diferentes tamaños de cadena para probar
 
     // Imprimir encabezado de la tabla
     println(f"| Tamaño | Ingenuo (ms) | Mejorado (ms) | Turbo (ms) | TurboMejorado |(ms)Oráculo |")
-
     for (tamano <- tamanios) {
       val oraculo = generarOraculo(tamano)
 
@@ -192,7 +191,7 @@ object oraculo {
   }
   //comparar ingenuo vs parallel con compararAlgoritmos
   def pruebasCompararAlgoritmosIngenuo(): Unit = {
-    val tamanios = Seq(4,8,12,16,32,64,128,256) // Diferentes tamaños de cadena para probar
+    val tamanios = Seq(2,4,8,10,12) // Diferentes tamaños de cadena para probar
     //imprimir encabezado de la tabla
     println(f"| Tamaño | Ingenuo (ms) | Ingenuo Parallel (ms) | Aceleracion (ms) |Oráculo |")
     //usar metodo comparar algoritmos para comparar ingenuo vs parallel
@@ -205,7 +204,7 @@ object oraculo {
 
   //comparar mejorado vs parallel con compararAlgoritmos
   def pruebasCompararAlgoritmosMejorado(): Unit = {
-    val tamanios = Seq(4,8,10,12,14,16,18,20) // Diferentes tamaños de cadena para probar
+    val tamanios = Seq(2,4,8,10,12) // Diferentes tamaños de cadena para probar
     //imprimir encabezado de la tabla
     println(f"| Tamaño | Mejorado (ms) | Mejorado Parallel (ms) | Aceleracion (ms) |Oráculo |")
     //usar metodo comparar algoritmos para comparar ingenuo vs parallel
@@ -218,11 +217,11 @@ object oraculo {
 
     def main(args: Array[String]): Unit = {
       //medir tiempo de ejecucion de ingenuo parallel
-      /*val oraculo: Oraculo = (s: Seq[Char]) => s == Seq('a', 'a', 'g', 't')
-      val secuencia = reconstruirCadenaIngenuoParallel(2)(4, oraculo)
-      println(secuencia)*/
-      //pruebas()
-      pruebasCompararAlgoritmosIngenuo()
+      //val oraculo = generarOraculo(14)
+      //val secuencia = reconstruirCadenaIngenuo(14, (s: Seq[Char]) => s == oraculo)
+      //println(oraculo)
+      pruebas()
+      //pruebasCompararAlgoritmosIngenuo()
       //pruebasCompararAlgoritmosMejorado()
 
     }
